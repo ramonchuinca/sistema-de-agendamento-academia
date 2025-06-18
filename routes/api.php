@@ -21,5 +21,14 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AgendamentoController;
 
 Route::post('/login', [UsuarioController::class, 'login']);
-Route::post('/agendar', [AgendamentoController::class, 'agendar']);
-Route::get('/agendamentos', [AgendamentoController::class, 'listar']);
+Route::get('/usuario', [UsuarioController::class, 'login']);
+Route::resource('/agendar', AgendamentoController::class);
+Route::get('/horarios-disponiveis/{data}', [AgendamentoController::class, 'horariosDisponiveis']);
+Route::get('/meus-agendamentos', [AgendamentoController::class, 'meusAgendamentos']);
+
+
+
+
+
+
+

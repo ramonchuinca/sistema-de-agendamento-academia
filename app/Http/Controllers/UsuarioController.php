@@ -29,4 +29,22 @@ class UsuarioController extends Controller
             'usuario' => $usuario,
         ]);
     }
+
+
+
+
+
+     public function index(Request $request)
+    {
+     
+
+        // Tenta achar usuário pelo nome
+        $usuario = Usuario::get();
+
+       
+        return response()->json([
+            'message' => 'Login efetuado com sucesso!',
+            'usuario' => $usuario,
+        ]);
+    }
 }

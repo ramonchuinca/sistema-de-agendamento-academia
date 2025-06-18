@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class AgendamentoController extends Controller
 {
     // Listar todos agendamentos (pode ser filtrado por usuário)
-    public function listar(Request $request)
+    public function index(Request $request)
     {
         if ($request->has('usuario_id')) {
             $agendamentos = Agendamento::where('usuario_id', $request->usuario_id)->get();
@@ -22,8 +22,9 @@ class AgendamentoController extends Controller
     }
 
     // Criar agendamento com limite de 5 por dia e horário permitido (08:00 - 09:20)
-    public function agendar(Request $request)
+    public function store(Request $request)
     {
+        var_dump($request->all());
         $request->validate([
             'usuario_id' => 'required|exists:usuarios,id',
             'data' => 'required|date',
@@ -64,4 +65,61 @@ class AgendamentoController extends Controller
             'agendamento' => $agendamento,
         ]);
     }
+
+
+     public function horariosDisponiveis($data)
+{
+    $horariosPossiveis = ['08:00', '08:20', '08:40', '09:00', '09:20'];
+
+    // Buscar os horários já agendados para a data
+    $agendados = Agendamento::where('data', $data)->pluck('hora')->toArray();
+
+    // Remover os horários já agendados da lista de horários possíveis
+    $disponiveis = array_values(array_diff($horariosPossiveis, $agendados));
+
+    return response()->json($disponiveis);
+}
+
+
+
+    public function agendar(Request $request)
+    {
+        $request->validate([
+            'data' => 'required|date',
+            'hora' => 'required|string',
+        ]);
+
+        $usuario = auth()->user();
+
+        // Validar se o horário está dentro do intervalo permitido
+        $horariosPermitidos = ['08:00', '08:20', '08:40', '09:00', '09:20'];
+        if (!in_array($request->hora, $horariosPermitidos)) {
+            return response()->json(['erro' => 'Horário inválido. Escolha entre 08:00 e 09:20.'], 400);
+        }
+
+        // Verificar se o limite de 5 agendamentos já foi atingido na data
+        $quantidade = Agendamento::where('data', $request->data)->count();
+        if ($quantidade >= 5) {
+            return response()->json(['erro' => 'Limite de 5 agendamentos por dia atingido.'], 400);
+        }
+
+        // Verificar se o horário já foi agendado
+        $existe = Agendamento::where('data', $request->data)
+            ->where('hora', $request->hora)
+            ->exists();
+        if ($existe) {
+            return response()->json(['erro' => 'Esse horário já está agendado.'], 400);
+        }
+
+        // Criar agendamento
+        $agendamento = Agendamento::create([
+            'usuario_id' => $usuario->id,
+            'data' => $request->data,
+            'hora' => $request->hora,
+        ]);
+
+        return response()->json(['mensagem' => 'Agendamento realizado com sucesso!', 'agendamento' => $agendamento]);
+    }
+
+    
 }
