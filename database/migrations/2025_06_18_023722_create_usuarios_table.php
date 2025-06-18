@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('usuarios', function (Blueprint $table) {
-    $table->id(); // isso já cria um unsignedBigInteger
-    $table->string('nome');
-    $table->float('peso');
-    $table->float('altura');
-    $table->timestamps();
-         });
+        Schema::create('usuarios', function (Blueprint $table) {
+            $table->id(); // Cria um campo 'id' do tipo unsignedBigInteger
+            $table->string('nome');
+            $table->float('peso');
+            $table->float('altura');
+            $table->boolean('is_admin')->default(false); // Aqui você adiciona
+            $table->timestamps();
+        });
     }
 
     /**
@@ -28,3 +29,4 @@ return new class extends Migration
         Schema::dropIfExists('usuarios');
     }
 };
+

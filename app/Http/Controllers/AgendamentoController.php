@@ -121,5 +121,34 @@ class AgendamentoController extends Controller
         return response()->json(['mensagem' => 'Agendamento realizado com sucesso!', 'agendamento' => $agendamento]);
     }
 
+
+
+
+    public function listarTodos()
+{
+    $agendamentos = Agendamento::with('usuario')
+        ->orderBy('data')
+        ->orderBy('hora')
+        ->get();
+
+    return response()->json($agendamentos);
+}
+
+
+public function vagasRestantes($data)
+{
+    $limite = 5;
+    $quantidade = Agendamento::where('data', $data)->count();
+    $vagas = max($limite - $quantidade, 0);
+
+    return response()->json([
+        'data' => $data,
+        'agendamentos' => $quantidade,
+        'vagas_restantes' => $vagas
+    ]);
+}
+
+
+
     
 }
