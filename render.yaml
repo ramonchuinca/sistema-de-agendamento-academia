@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: laravel-backend
+    env: php
+    plan: free
+    region: oregon
+    buildCommand: |
+      curl -s https://getcomposer.org/installer | php
+      php composer.phar install --no-dev --optimize-autoloader
+      php artisan key:generate
+      php artisan migrate 
+    startCommand: php artisan serve --host 0.0.0.0 --port 10000
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
