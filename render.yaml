@@ -18,6 +18,6 @@ services:
       - key: DB_CONNECTION
         value: mysql
       - key: DB_DATABASE
-        value: /tmp/database.sqlite
+        value: /tmp/database.mysql
       - key: APP_KEY
         generateValue: true
