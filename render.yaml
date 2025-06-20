@@ -7,11 +7,17 @@ services:
     buildCommand: |
       curl -sS https://getcomposer.org/installer | php
       php composer.phar install --no-dev --optimize-autoloader
+      cp .env.example .env
+      touch /tmp/database.sqlite
       php artisan key:generate
       php artisan migrate --force
     startCommand: php artisan serve --host 0.0.0.0 --port 10000
     envVars:
       - key: APP_ENV
         value: production
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_DATABASE
+        value: /tmp/database.sqlite
       - key: APP_KEY
         generateValue: true
